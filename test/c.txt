@@ -1,0 +1,61 @@
+用户：Python中的装饰器是什么？怎么定义一个简单的装饰器？
+
+AI：装饰器是一个接收函数并返回新函数的可调用对象，用于在不修改原函数代码的情况下增加额外功能。
+最简单的装饰器示例：
+
+python
+def my_decorator(func):
+    def wrapper():
+        print("调用前")
+        func()
+        print("调用后")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello!")
+
+say_hello()
+输出：
+
+text
+调用前
+Hello!
+调用后
+用户：如果装饰器本身需要参数，应该怎么写？
+
+AI：可以在装饰器外层再嵌套一层函数接收参数，返回真正的装饰器。例如：
+
+python
+def repeat(times):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            for _ in range(times):
+                func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@repeat(3)
+def greet():
+    print("Hi")
+
+greet()
+这会输出三次 Hi。
+
+用户：装饰器可以用来做什么？除了日志、计时，还有哪些高级用法？
+
+AI：常见应用：
+
+权限控制：检查用户是否登录。
+
+缓存：记忆函数结果（functools.lru_cache）。
+
+路由注册：在Web框架中映射URL。
+
+数据校验：检查函数参数类型或范围。
+
+事务管理：自动提交或回滚数据库操作。
+
+重试机制：当函数抛出异常时自动重试。
+
+速率限制：控制函数调用频率。
