@@ -132,7 +132,7 @@ python main.py
 
 ### Q: 向量库为空
 
-**A:** 运行 `python main.py --sync` 强制同步思源笔记数据
+**A:** 运行 `python vector_db.py` 初始化向量库，确保数据与思源笔记同步
 
 ## 许可证
 
