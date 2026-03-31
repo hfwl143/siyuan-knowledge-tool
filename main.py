@@ -3,7 +3,7 @@ os.environ['TRANSFORMERS_OFFLINE'] = '1'# 禁用 Transformers 的在线模型下
 os.environ['HF_HUB_OFFLINE'] = '1'# 禁用 HF Hub 的在线模型下载，避免连接超时
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'# 配置 HF 镜像，国内开发者普遍会遇到 Hugging Face 连接超时的问题
 import qprompt as qp
-#prompt
+#prompt.py，包含所有提示词的模块
 from prompt.arrange import arrange_prompt
 #向量数据库crud
 from vector_db import add_document, delete_document, update_document, search_similar
