@@ -1,0 +1,27 @@
+# 基础依赖
+python-dotenv==1.0.0
+langchain==0.1.0
+langchain-community==0.0.20
+langchain-core==0.1.20
+
+# 大模型依赖
+openai==1.30.0
+
+# 向量数据库
+chromadb==1.5.0
+
+# 文本嵌入
+sentence-transformers==2.2.2
+
+# 思源笔记集成
+siyuan-client==0.1.0
+
+# 其他工具
+qprompt==0.10.0
+yaml==6.0.1
+requests==2.31.0
+
+# 开发依赖
+pytest==7.4.0
+black==23.11.0
+flake8==6.1.0
