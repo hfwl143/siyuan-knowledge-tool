@@ -1,143 +1,179 @@
-# 思源知识库工具 (Siyuan Knowledge Tool)
+# 思源知识库工具 (SiYuan Knowledge Tool)
+一个基于思源笔记和向量数据库的智能知识管理工具，支持从聊天记录或文本中**自动提取知识点、语义检索去重、智能合并**，并同步到思源笔记。
 
-一个基于思源笔记和向量数据库的智能知识管理工具，支持知识自动整合、相似内容检索和智能问答。
+---
 
-## 功能特点
+## ✨ 功能特点
+- **知识点自动提取**：使用大模型将原始文本整理为结构化 Markdown（标题、摘要、标签）
+- **语义检索与去重**：基于向量数据库（ChromaDB）检索相似知识点，智能提示重复/相关笔记
+- **智能合并**：将新内容与已有笔记融合，保留旧结构，补充新信息
+- **思源笔记集成**：所有笔记直接存入思源，无需本地文件；提供独立同步脚本手动重建向量索引
+- **命令行交互**：简洁菜单操作，支持文本直接输入或文件导入
 
-- **知识自动整合**：将新知识点智能合并到已有笔记中
-- **向量数据库**：使用 ChromaDB 存储和检索知识向量
-- **智能问答**：基于大模型的知识问答系统
-- **思源笔记集成**：支持从思源笔记同步数据
-- **命令行界面**：交互式命令行操作
+---
 
-## 技术栈
+## 🛠️ 技术栈
+- Python 3.13
+- LangGraph – 状态机与流程编排
+- ChromaDB – 向量存储与检索
+- Sentence-Transformers – 文本嵌入模型（`paraphrase-multilingual-MiniLM-L12-v2`）
+- 豆包 API – 大语言模型服务
+- 思源笔记 API – 笔记存储与同步
 
-- **Python 3.13**
-- **LangChain**：大模型接口封装
-- **ChromaDB**：向量数据库
-- **SentenceTransformers**：文本嵌入模型
-- **豆包 API**：大模型服务
-- **Siyuan API**：思源笔记集成
+---
 
-## 安装步骤
+## 📦 安装步骤
 
 ### 1. 克隆仓库
-
 ```bash
 git clone https://github.com/hfwl143/siyuan-knowledge-tool.git
 cd siyuan-knowledge-tool
 ```
 
 ### 2. 安装依赖
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. 配置环境变量
-
-复制 `.env` 文件并填写相关配置：
-
+复制示例配置文件并填写真实值：
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env` 文件，填写以下信息：
-
+**必填配置**：
 - `DOUBAO_API_KEY`：豆包 API 密钥
-- `DOUBAO_MODEL`：使用的豆包模型（如 `ep-m-20251214153137-mrhqw`）
-- `SERPAPI_KEY`：SerpAPI 密钥（可选，用于搜索工具）
-- `SIYUAN_TOKEN`：思源笔记 API 令牌
-- `SIYUAN_NOTEBOOK_ID`：思源笔记本 ID
-- `SIYUAN_ENABLED`：是否启用思源集成（`true` 或 `false`）
+- `DOUBAO_MODEL`：豆包接入点 ID（格式 `ep-xxxxxx`）
+- `SIYUAN_TOKEN`：思源笔记 API Token（思源「设置 → 关于」中获取）
+- `SIYUAN_NOTEBOOK_ID`：目标笔记本 ID（可通过 `sy_test.py` 获取）
+- `SIYUAN_ENABLED`：设为 `true` 启用思源集成
 
-## 核心功能
+**可选配置**：
+- `SIMILARITY_TOP_K`：检索返回的最大笔记数（默认 5）
+- `SIMILARITY_THRESHOLD`：相似度阈值（默认 0.5）
 
-### 1. 知识整合
-
-将新知识点智能合并到已有笔记中：
-
+### 4. 首次使用：建立向量索引
+确保**思源笔记已打开**，执行：
 ```bash
-python test_merge.py <旧笔记> <新知识点>
+python sync_siyuan.py
 ```
+> 该脚本会清空向量库并从思源指定笔记本重建索引  
+> **日常使用无需执行**，仅在思源手动增删大量笔记后使用
 
-- `<旧笔记>` 和 `<新知识点>` 可以是文件路径、直接文本或标准输入（使用 `-`）
+---
 
-### 2. 智能问答
+## 🚀 使用方法
 
-启动交互式问答系统：
-
+### 日常使用
 ```bash
 python main.py
 ```
+输入文本/文件路径（支持 `.txt`/`.md`/`.docx`/`.pdf`），程序自动执行：
+1. 提取知识点并生成结构化 Markdown
+2. 向量库检索相似笔记
+3. 提供操作选项：**合并 / 新建 / 取消**
+4. 合并则更新原笔记，新建则创建思源文档
 
-- 输入问题或文件路径
-- 系统会检索相关知识并生成回答
+输入 `quit` 退出程序
 
-### 3. 向量库管理
+---
 
-- **强制同步**：清空并重建向量库
-  ```bash
-  python main.py --sync
-  ```
+### 独立测试合并功能
+```bash
+python test_merge.py <旧笔记文件/文本> <新知识点文件/文本>
+```
 
-## 项目结构
+示例：
+```bash
+python test_merge.py old.md new.txt
+```
+结果自动保存至 `merge_result.md`，方便调试提示词
 
+---
+
+### 获取思源笔记本 ID
+```bash
+python sy_test.py
+```
+列出所有笔记本及其 ID，用于配置 `SIYUAN_NOTEBOOK_ID`
+
+---
+
+## 📂 项目结构
 ```
 .
-├── chroma_db/          # 向量数据库
-├── knowledge_base/     # 知识库文件
-├── logs/              # 日志文件
-├── prompt/            # 提示词模板
-│   ├── arrange.py     # 内容整理提示词
-│   └── combine.py     # 知识合并提示词
-├── tools/             # 工具模块
-│   └── Serp.py        # 搜索工具
-├── .env               # 环境变量配置
-├── add.py             # 添加文档
-├── build_index.py     # 构建索引
-├── combine.py         # 知识合并逻辑
-├── config.py          # 配置文件
-├── file_utils.py      # 文件工具
-├── init_vector.py     # 向量库初始化
-├── main.py            # 主程序
-├── siyuan_client.py   # 思源客户端
-├── test_merge.py      # 合并测试
-├── vector_db.py       # 向量数据库操作
-└── README.md          # 项目说明
+├── main.py                # 主程序入口
+├── sync_siyuan.py         # 向量库同步脚本
+├── siyuan_client.py       # 思源 API 客户端
+├── vector_db.py           # 向量数据库操作
+├── init_vector.py         # 向量库清空与重建
+├── combine.py             # 知识点合并核心逻辑
+├── file_utils.py          # 文件/文本读取工具
+├── config.py              # 配置加载（.env）
+├── prompt/                # 提示词模板
+│   ├── arrange.py         # 知识点提取提示词
+│   └── combine.py         # 合并提示词
+├── tools/                 # 扩展工具
+├── test_merge.py          # 合并功能测试
+├── sy_test.py             # 思源 API 测试
+├── requirements.txt       # 依赖列表
+├── .env.example           # 环境变量模板
+└── README.md
 ```
 
-## 注意事项
+---
 
-1. **API 密钥**：确保正确配置豆包 API 密钥，否则无法使用大模型功能
-2. **思源笔记**：如果启用思源集成，确保思源笔记已启动且 API 服务正常
-3. **向量数据库**：首次运行会创建向量库，可能需要一些时间
-4. **依赖安装**：确保所有依赖已正确安装，特别是 SentenceTransformers 可能需要较长时间下载模型
+## 💡 设计思想
 
-## 常见问题
+### 为什么选择思源作为存储后端？
+- **数据安全**：支持本地离线存储，完全掌控数据
+- **开放 API**：完整 HTTP API，无需依赖第三方云服务
+- **知识网络**：内置双向链接、块引用、知识图谱，契合知识点管理理念
 
-### Q: 无法连接思源笔记
+### 为什么使用向量数据库？
+- **语义检索**：理解语义关联，优于传统关键词匹配
+- **去重与合并**：通过相似度判断内容重复，减少人工整理
+- **轻量级**：ChromaDB 本地运行，无需额外服务
 
-**A:** 确保：
-- 思源笔记已启动
-- API 服务已开启（设置 → 关于 → 高级设置 → 启用 API 服务）
-- `SIYUAN_TOKEN` 和 `SIYUAN_NOTEBOOK_ID` 配置正确
+### 合并流程设计
+- **用户确认**：提供预览与选项，避免误操作
+- **保留结构**：优先保留旧笔记结构，仅补充新信息
+- **LLM 辅助**：实现语义融合，而非简单拼接
 
-### Q: 合并失败
+### 同步脚本与主程序分离
+- **安全**：主程序永不自动清空向量库，防止数据丢失
+- **灵活**：手动执行同步脚本，保持向量库与思源一致
 
-**A:** 检查：
-- 豆包 API 密钥是否正确
-- 网络连接是否正常
-- 输入的笔记内容是否为空
+---
 
-### Q: 向量库为空
+## ⚠️ 注意事项
+1. **思源笔记必须保持运行**，否则无法读写笔记
+2. 首次运行 `main.py` 前，必须执行 `python sync_siyuan.py` 建立索引
+3. 请勿手动删除 `chroma_db/` 目录，否则需重新同步
+4. 豆包 API 调用会产生费用，请注意额度控制
 
-**A:** 运行 `python vector_db.py` 初始化向量库，确保数据与思源笔记同步
+---
 
-## 许可证
+## ❓ 常见问题
+**Q: 为什么没有本地文件？**  
+A: 工具完全基于思源笔记存储，不再生成本地 Markdown 文件
 
+**Q: 向量库为空/检索不到笔记？**  
+A: 确认思源有内容，执行 `python sync_siyuan.py` 重建索引
+
+**Q: 合并效果不理想？**  
+A: 调整 `SIMILARITY_THRESHOLD` 阈值，或优化 `prompt/combine.py` 提示词
+
+**Q: 如何更新向量库？**  
+A: 修改/删除思源笔记后，执行 `sync_siyuan.py` 全量重建
+
+---
+
+## 📄 许可证
 MIT
 
-## 贡献
-
+## 🤝 贡献
 欢迎提交 Issue 和 Pull Request！
+
+## 🎬 演示
+（待补充截图和录屏）
