@@ -176,4 +176,7 @@ MIT
 欢迎提交 Issue 和 Pull Request！
 
 ## 🎬 演示
-[这个是无相似保存](img/1.png)
+[这个是无相似保存](img/1.png) [起始](img/A.png)
+[保存](img/B.png) [发现相似](img/C.png)
+[合并成功](img/d.png) [结果](img/e.png)
+[向量数据库统计](img/g.png)
